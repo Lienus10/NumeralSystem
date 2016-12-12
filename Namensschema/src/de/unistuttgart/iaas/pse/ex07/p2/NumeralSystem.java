@@ -3,6 +3,7 @@ package de.unistuttgart.iaas.pse.ex07.p2;
 import java.util.Scanner;
 
 /**
+ * test
  * 
  * @author juliu
  *
