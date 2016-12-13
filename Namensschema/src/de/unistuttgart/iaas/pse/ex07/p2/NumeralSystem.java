@@ -3,20 +3,17 @@ package de.unistuttgart.iaas.pse.ex07.p2;
 import java.util.Scanner;
 
 /**
- * test
- * 
- * 
- * testbranch
  * 
  * @author juliu
  *
  */
 public class NumeralSystem {
 
-
 	public static void main(String[] args) {
 
-		printMenu();
+		//				printMenu();
+
+		System.out.println(conv2Dez("11011", 2, 10));
 	}
 
 	public static void printMenu(){
@@ -34,18 +31,58 @@ public class NumeralSystem {
 		System.out.println("In welche Basis soll der Wert umgerechnet werden? ");
 		base2 = scanner.nextInt();
 
-		System.out.println(conv2Dez(dez, base1, base2));
+		if(base2 == 10){
+			conv2Dez(dez, base1, base2);
+		}
+		//		conv2Dez(dez, base1, base2);
 	}
 
-	public static String conv2Dez(String dez, int ersteBase, int zielBase){
+	/**
+	 * Diese Methode wandelt eine Zahl beliebiger Basis in eine Dezimalzahl um
+	 * 
+	 * @param x
+	 * @param ersteBase
+	 * @param zielBase
+	 * @return
+	 */
+	public static int conv2Dez(String x, int ersteBase, int zielBase){
 
-		int x;
-		//Wenn Eingabe numerischer Wert, dann direkt weiter, wenn nicht, dann umrechnen
-		if(!dez.matches("[-+]?\\d*\\.?\\d+")){
-			x = ueber10(dez, ersteBase);
-		} else{
-			x = Integer.parseInt(dez);
+		String umgekehrt = "";
+		for ( int j = x.length()-1; j >= 0; j-- ){
+			umgekehrt += x.charAt(j);
 		}
+
+		x = umgekehrt;		
+
+		char ch[] = x.toCharArray();
+		int in[] = new int[x.length()];
+
+		for(int i = 0; i < x.length(); i++){
+			if(Character.isLetter(x.charAt(i))){
+				in[i] = (char) ((int) ch[i] - 55);
+			} else{			
+				in[i] = ch[i] - 48;
+				System.out.println(in[i]);
+			}
+		}
+
+		int z;
+		int summe = 0;
+		for(int i = 0; i < x.length(); i++){
+
+			z = in[i];
+
+			summe = (int) (summe + (z * Math.pow(16, i)));
+		}
+		//System.out.println(summe);
+		//		convFromDez(summe, ersteBase, zielBase);
+		return summe;
+	}
+
+
+	public static void convFromDez(int x, int ersteBase, int zielBase){
+
+		//Wenn Eingabe numerischer Wert, dann direkt weiter, wenn nicht, dann umrechnen
 
 		int z = 1;
 		String endTerm = "";
@@ -71,6 +108,16 @@ public class NumeralSystem {
 			umgekehrt += endTerm.charAt(j);
 		}
 
+		System.out.println(umgekehrt);
+
+	}
+
+	public static String strUmgekehren(String s){
+		
+		String umgekehrt = "";
+		for ( int j = s.length()-1; j >= 0; j-- ){
+			umgekehrt += s.charAt(j);
+		}
 		return umgekehrt;
 
 	}
