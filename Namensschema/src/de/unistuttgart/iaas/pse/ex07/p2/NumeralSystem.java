@@ -15,11 +15,13 @@ public class NumeralSystem {
 
 
 	public static void main(String[] args) {
-
+		//				System.out.println(toFinal(190, 12));
+		//				System.out.println(inZeichen(13));
 		printMenu();
 	}
 
 	public static void printMenu(){
+		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 		String dez;
 		int base1, base2;
@@ -34,77 +36,94 @@ public class NumeralSystem {
 		System.out.println("In welche Basis soll der Wert umgerechnet werden? ");
 		base2 = scanner.nextInt();
 
-		System.out.println(conv2Dez(dez, base1, base2));
+		System.out.println(zuweisung(dez, base1, base2));
+		//		System.out.println(conv2Dez(dez, base1, base2));
 	}
 
-	public static String conv2Dez(String dez, int ersteBase, int zielBase){
 
-		int x;
-		//Wenn Eingabe numerischer Wert, dann direkt weiter, wenn nicht, dann umrechnen
-		if(!dez.matches("[-+]?\\d*\\.?\\d+")){
-			x = ueber10(dez, ersteBase);
-		} else{
-			x = Integer.parseInt(dez);
+	public static String zuweisung(String dez, int base1, int base2) {
+
+		if(base1 == base2){
+			return dez;
 		}
 
-		int z = 1;
-		String endTerm = "";
+		if(base2 == 10){
+			return toDez(dez, base1) + "";
+		}
 
-		// Solange das Ergebnis der Division nicht null ist, wird weiter gerechnet und das Ergebnis
-		//als String gespeichert
-		while(z > 0){
-			z = (x / zielBase);
+		if(base1 == 10){
+			return toFinal(Integer.parseInt(dez), base2) + "";
+		}
 
-			if(x % zielBase > 9){
-				endTerm = endTerm + ueber10(x % zielBase);
+		return toFinal(toDez(dez, base1), base2);
+	}
+
+	public static int toDez(String dez, int ersteBase){
+
+		dez = umkehren(dez);
+
+		int t;
+		int summe = 0;
+
+		for(int i = 0; i < dez.length(); i++){
+			if(Character.isLetter(dez.charAt(0))){
+				t = inZahl(dez.charAt(i));
+			} else {
+				t = dez.charAt(i) - 48;
+			}			
+			summe = (int) (summe + (t * Math.pow(ersteBase, i)));
+		}
+
+		return summe;
+
+	}
+
+
+	public static String toFinal(int b, int zielBase){
+
+		int h = -1;
+		String s = "";
+
+		while(h != 0){
+			h = b / zielBase;	
+
+			if(b % zielBase > 9){
+				s = s + inZeichen(b % zielBase);
 			} else{
-				endTerm = endTerm + x % zielBase;
+				s = s + b % zielBase + "";
 			}
 
-			x = z;
+			b = h;
 		}
 
-		String umgekehrt = "";
-
-		//Wird umgewandelt, da bisher von links nach rechts gerechnet wurde
-		for ( int j = endTerm.length()-1; j >= 0; j-- ){
-			umgekehrt += endTerm.charAt(j);
-		}
-
-		return umgekehrt;
+		return umkehren(s);
 
 	}
 
-	public static int ueber10(String s , int b){
+
+	public static String umkehren(String s){
 
 		String s1 = "";
 
-		//String wird umgekehrt
 		for ( int j = s.length()-1; j >= 0; j-- ){
 			s1 += s.charAt(j);
 		}
 
-		char[] ch = s1.toCharArray();
-
-		int r;
-		int z = 0;
-
-		//Wert wird umgerechnet
-		for(int i = 0; i < s.length(); i++){
-
-			r = (int) ((((int) ch[i] - 55)) * Math.pow(b, i));
-			//			System.out.println("RRR: " +r+ "  " + ch[i]);
-			//			System.out.println((int) ch[i] - 55 + "  " + Math.pow(b, i));
-			z = z + r;
-
-		}
-
-		return z;
+		return s1;
 	}
 
-	public static String ueber10(int i) {
 
-		//Werte über 10 werden in Buchstaben umgerechnet
+	public static int inZahl(char c){
+
+		int i = (int) (c - 55);
+
+		return i;
+
+	}
+
+
+	public static String inZeichen(int i) {
+
 		i = i - 10;
 
 		char ch = (char) (i + 65);
