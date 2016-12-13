@@ -1,118 +1,250 @@
 package de.unistuttgart.iaas.pse.ex07.p2;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Scanner;
 
 /**
- * test
+ * Diese Klasse bietet Methoden, die das Umrechnen von Zahlen in den Zahlensystemen von 1 bis 16
+ * ermöglichen
  * 
- * 
- * testbranch
- * 
- * @author juliu
- *
+ * @author Langer, 3255917, st149962@stud.uni-stuttgart.de
+ * @author Zouboulis, 3230893, st148316@stud.uni-stuttgart.de
+ * @author Honecker, 2813091, st148147@stud.uni-stuttgart.de  
  */
 public class NumeralSystem {
 
 
 	public static void main(String[] args) {
-
-		printMenu();
+		printMenu();	
 	}
 
+	/**
+	 * Diese Methode liest die Nutzereingaben ein
+	 */
 	public static void printMenu(){
+		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 		String dez;
-		int base1, base2;
+		int base1 = 0, base2 = 0;
 
 		//Die Nutzereingaben
+
+		System.out.println("welche Basis hat der Ausgangswert? ");
+		String s1 = scanner.nextLine();
+		if(s1.equals("0")){
+			System.exit(0);
+		}
+		if(!pruefeInputBase(s1)){
+			System.err.println("Bitte geben Sie einen gültigen Wert ein!");
+			printMenu();
+		}
+
+
 		System.out.println("Welchen Wert wollen Sie umrechnen? ");
 		dez = scanner.nextLine();
-
-		System.out.println("welche Basis hat der Wert? ");
-		base1 = scanner.nextInt();
+		dez = dez.toUpperCase();		
 
 		System.out.println("In welche Basis soll der Wert umgerechnet werden? ");
-		base2 = scanner.nextInt();
+		String s2 = scanner.nextLine();
 
-		System.out.println(conv2Dez(dez, base1, base2));
+		if(pruefeInputBase(s1) && pruefeInputBase(s2)){
+			base1 = Integer.parseInt(s1);
+			base2 = Integer.parseInt(s2);
+
+			if(pruefeInputDez(dez, base1, base2)){
+				System.out.println(zuweisung(dez, base1, base2));
+			} else{
+				System.err.println("Bitte geben Sie einen gültigen Wert ein!");
+				printMenu();
+			}
+		} else{
+
+			System.err.println("Bitte geben Sie einen gültigen Wert ein!");
+			printMenu();
+		}
 	}
 
-	public static String conv2Dez(String dez, int ersteBase, int zielBase){
 
-		int x;
-		//Wenn Eingabe numerischer Wert, dann direkt weiter, wenn nicht, dann umrechnen
-		if(!dez.matches("[-+]?\\d*\\.?\\d+")){
-			x = ueber10(dez, ersteBase);
-		} else{
-			x = Integer.parseInt(dez);
+
+
+	/**
+	 * Diese Methode startet auf Grundlage der Nutzereingaben die
+	 * dementsprechenden Methoden an
+	 * 
+	 * @param dez (String) Nutzereingabe für die umzurechnende Zahl
+	 * @param base1 (int) Nutzereingabe für das Ausgangszahlensystem
+	 * @param base2 (int) Nutzereingabe für das Zielzahlensystem
+	 * @return (String) der errechnete Wert
+	 */
+	public static String zuweisung(String dez, int base1, int base2) {
+
+		if(base1 == base2){
+			return dez;
 		}
 
-		int z = 1;
-		String endTerm = "";
+		if(base2 == 10){
+			return toDez(dez, base1) + "";
+		}
 
-		// Solange das Ergebnis der Division nicht null ist, wird weiter gerechnet und das Ergebnis
-		//als String gespeichert
-		while(z > 0){
-			z = (x / zielBase);
+		if(base1 == 10){
+			return toFinal(Integer.parseInt(dez), base2) + "";
+		}
 
-			if(x % zielBase > 9){
-				endTerm = endTerm + ueber10(x % zielBase);
+		return toFinal(toDez(dez, base1), base2);
+	}
+
+	/**
+	 * Wandelt eine Zahl beliebigem Zahlensystems in das Dezimalsystem um
+	 * 
+	 * @param dez (String) Nutzereingabe für die umzurechnende Zahl
+	 * @param ersteBase (int) Nutzereingabe für das Ausgangszahlensystem
+	 * @return (int) der Wert im Dezimalsystem 
+	 */
+	public static int toDez(String dez, int ersteBase){
+
+		dez = umkehren(dez);
+
+		int t;
+		int summe = 0;
+
+		for(int i = 0; i < dez.length(); i++){
+			if(Character.isLetter(dez.charAt(i))){
+				t = inZahl(dez.charAt(i));
+			} else {
+				t = dez.charAt(i) - 48;
+			}			
+			summe = (int) (summe + (t * Math.pow(ersteBase, i)));
+		}
+		return summe;
+
+	}
+
+	/**
+	 * Wandelt eine Zahl aus dem Dezimalsystem in ein beliebiges Zahlensystem um
+	 * 
+	 * @param b (int) die Zahl im Dezimalsystem
+	 * @param zielBase (int) das Zielzahlensystem
+	 * @return (String) der Wert im Zielzahlensystem
+	 */
+	public static String toFinal(int b, int zielBase){
+
+		int h = -1;
+		String s = "";
+
+		while(h != 0){
+			h = b / zielBase;	
+
+			if(b % zielBase > 9){
+				s = s + inZeichen(b % zielBase);
 			} else{
-				endTerm = endTerm + x % zielBase;
+				s = s + b % zielBase + "";
 			}
 
-			x = z;
+			b = h;
 		}
 
-		String umgekehrt = "";
-
-		//Wird umgewandelt, da bisher von links nach rechts gerechnet wurde
-		for ( int j = endTerm.length()-1; j >= 0; j-- ){
-			umgekehrt += endTerm.charAt(j);
-		}
-
-		return umgekehrt;
+		return umkehren(s);
 
 	}
 
-	public static int ueber10(String s , int b){
+	/**
+	 * Überprüft die Nutzereingabe des Ausgangswertes auf Richtigkeit
+	 * 
+	 * @param dez (String) Nutzereingabe für die umzurechnende Zahl
+	 * @param base1 (int) Nutzereingabe für das Ausgangszahlensystem
+	 * @param base2 (int) Nutzereingabe für das Zielzahlensystem
+	 * @return (boolean) Ist die Nutzeringabe korrekt
+	 */
+	public static boolean pruefeInputDez(String dez, int base1, int base2) {
+
+		char[] ch = dez.toCharArray();
+		Integer[] in = new Integer[dez.length()];
+
+		for(int i = 0; i < dez.length(); i++){
+			if(Character.isLetter(ch[i])){
+				in[i] = inZahl(dez.charAt(i));
+			} else{
+				in[i] = ch[i] - 48;
+			}
+		}
+		Arrays.sort(in);
+		Arrays.sort(in, Collections.reverseOrder());
+
+		if(in[0] < base1){
+			return true;
+		} else{
+			return false;
+		}
+	}
+
+
+	/**
+	 * Überprüft die Nutzereingabe der Basis auf Richtigkeit
+	 * 
+	 * @param s (String) Die Nutzereingabe 
+	 * @return (boolean) Ist die Nutzereingabe korrekt
+	 */
+	public static boolean pruefeInputBase(String s){
+
+		for(int i = 0; i < s.length(); i++){
+			if(Character.isLetter(s.charAt(0))){
+				return false;
+			}
+		}
+
+		if(Integer.parseInt(s) > 1 && Integer.parseInt(s) < 17){
+			return true;
+		} else{
+			return false;
+		}
+
+	}
+
+	/**
+	 * Dreht einen String um 
+	 * 
+	 * @param s (String) der umzuwandelnde String
+	 * @return (String) der umgewandelte String
+	 */
+	public static String umkehren(String s){
 
 		String s1 = "";
 
-		//String wird umgekehrt
 		for ( int j = s.length()-1; j >= 0; j-- ){
 			s1 += s.charAt(j);
 		}
 
-		char[] ch = s1.toCharArray();
-
-		int r;
-		int z = 0;
-
-		//Wert wird umgerechnet
-		for(int i = 0; i < s.length(); i++){
-
-			r = (int) ((((int) ch[i] - 55)) * Math.pow(b, i));
-			//			System.out.println("RRR: " +r+ "  " + ch[i]);
-			//			System.out.println((int) ch[i] - 55 + "  " + Math.pow(b, i));
-			z = z + r;
-
-		}
-
-		return z;
+		return s1;
 	}
 
-	public static String ueber10(int i) {
+	/**
+	 * Wandelt ein Zeichen in die entsprechende Zahl um
+	 *  
+	 * @param c (char) das umzuwandelnde Zeichen
+	 * @return (int) das umgewandelte Zeichen
+	 */
+	public static int inZahl(char c){
 
-		//Werte über 10 werden in Buchstaben umgerechnet
+		int i = (int) (c - 55);
+
+		return i;
+
+	}
+
+	/**
+	 * Wandelt eine Zahl größer 9 in das entsprechende Zeichen um
+	 * 
+	 * @param i (int) die umzuwandelnde Zahl
+	 * @return (String) die umgewandelte Zahl
+	 */
+	public static String inZeichen(int i) {
+
 		i = i - 10;
 
 		char ch = (char) (i + 65);
 
 		return ch+"";
 	}
-
-
-
 
 }
