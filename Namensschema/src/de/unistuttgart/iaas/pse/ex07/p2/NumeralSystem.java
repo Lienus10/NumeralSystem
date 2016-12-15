@@ -49,8 +49,8 @@ public class NumeralSystem {
 		String s2 = scanner.nextLine();
 
 		if(pruefeInputBase(s1) && pruefeInputBase(s2)){
-			base1 = Integer.parseInt(s1);
-			base2 = Integer.parseInt(s2);
+			base1 = Integer.valueOf(s1);
+			base2 = Integer.valueOf(s2);
 
 			if(pruefeInputDez(dez, base1, base2)){
 				System.out.println(zuweisung(dez, base1, base2));
@@ -88,7 +88,7 @@ public class NumeralSystem {
 		}
 
 		if(base1 == 10){
-			return toFinal(Integer.parseInt(dez), base2) + "";
+			return toFinal(Integer.valueOf(dez), base2) + "";
 		}
 
 		return toFinal(toDez(dez, base1), base2);
@@ -193,7 +193,7 @@ public class NumeralSystem {
 			}
 		}
 
-		if(Integer.parseInt(s) > 1 && Integer.parseInt(s) < 17){
+		if(Integer.valueOf(s) > 1 && Integer.valueOf(s) < 17){
 			return true;
 		} else{
 			return false;
