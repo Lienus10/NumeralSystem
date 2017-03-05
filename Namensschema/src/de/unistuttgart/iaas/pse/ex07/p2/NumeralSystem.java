@@ -48,21 +48,44 @@ public class NumeralSystem {
 		System.out.println("In welche Basis soll der Wert umgerechnet werden? ");
 		String s2 = scanner.nextLine();
 
+		pruefe(s1, s2, base1, base2, dez);
+	}
+
+
+	/**
+	 * Prüfung der Nutzereingaben
+	 * 	
+	 * @param s1 Ausgangsbasis (String)
+	 * @param s2 Zielbasis (String)
+	 * @param base1 Ausgangsbasis (int)
+	 * @param base2 Zielbasis (int)
+	 * @param dez Wert (String)
+	 */
+	public static String  pruefe(String s1, String s2, int base1, int base2, String dez){		
+
 		if(pruefeInputBase(s1) && pruefeInputBase(s2)){
 			base1 = Integer.valueOf(s1);
 			base2 = Integer.valueOf(s2);
 
 			if(pruefeInputDez(dez, base1, base2)){
-				System.out.println(zuweisung(dez, base1, base2));
+				System.out.println(zuweisung(dez, base1, base2));			
+				return zuweisung(dez, base1, base2);
+
 			} else{
 				System.err.println("Bitte geben Sie einen gültigen Wert ein!");
-				printMenu();
+				return "ERROR";
+//				printMenu();
+
+
 			}
 		} else{
-
 			System.err.println("Bitte geben Sie einen gültigen Wert ein!");
-			printMenu();
+
+			return "ERROR";
+//			printMenu();
 		}
+
+
 	}
 
 
